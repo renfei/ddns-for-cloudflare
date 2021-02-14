@@ -7,7 +7,7 @@
 - [cloudflare](https://gitee.com/rnf/cloudflare)
 
 ## 使用入门
-首先，下载最新版的 Jar 包：
+首先，下载最新版的 Jar 包：[https://gitee.com/rnf/ddns-for-cloudflare/attach_files/613529/download/ddns-1.0.0.jar](https://gitee.com/rnf/ddns-for-cloudflare/attach_files/613529/download/ddns-1.0.0.jar)
 
 运行 Jar 包并传递参数：
 
