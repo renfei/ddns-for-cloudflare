@@ -1,3 +1,5 @@
+package net.renfei.ddns;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.beust.jcommander.JCommander;
@@ -9,6 +11,7 @@ import net.renfei.cloudflare.entity.Zone;
 import net.renfei.sdk.http.HttpRequest;
 import net.renfei.sdk.http.HttpResult;
 import net.renfei.sdk.utils.BeanUtils;
+import net.renfei.sdk.utils.DateUtils;
 import net.renfei.sdk.utils.HttpUtils;
 
 import java.io.IOException;
@@ -48,8 +51,12 @@ public class Main {
         cloudflare = new Cloudflare(token);
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
         executorService.scheduleWithFixedDelay(() -> {
+            System.out.println("==== DDNS-for-Cloudflare ============");
+            System.out.printf("Start time:%s\n", DateUtils.getDate());
             try {
                 getMyIp();
+                System.out.printf("GetIP:%s\n", this.myIp);
+                System.out.printf("Has IP changed:%s\n", !this.deployed);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -58,12 +65,15 @@ public class Main {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, 1, 120, TimeUnit.SECONDS);
+            System.out.printf("End time:%s\n", DateUtils.getDate());
+            System.out.println("==== DDNS-for-Cloudflare >>>>>>>>>>>>\n");
+        }, 1, 5, TimeUnit.SECONDS);
     }
 
     private void deployDns() throws IOException {
         Map<String, Object> paramMap = new HashMap<>(2);
         paramMap.put("match", "all");
+        paramMap.put("type", "A");
         paramMap.put("name", this.domain);
         List<DnsRecords> dnsRecords = cloudflare.dnsRecords.getListDnsRecord(getZone().getId(), paramMap);
         CreateDnsRecord createDnsRecord = new CreateDnsRecord();
@@ -74,8 +84,10 @@ public class Main {
         createDnsRecord.setProxied(false);
         createDnsRecord.setPriority(10);
         if (BeanUtils.isEmpty(dnsRecords)) {
+            System.out.printf("DeployDns-CreateDnsRecord:%s\n", this.myIp);
             cloudflare.dnsRecords.createDnsRecord(getZone().getId(), createDnsRecord);
         } else {
+            System.out.printf("DeployDns-UpdateDnsRecord:%s\n", this.myIp);
             cloudflare.dnsRecords.updateDnsRecord(getZone().getId(), dnsRecords.get(0).getId(), createDnsRecord);
         }
         this.deployed = true;
