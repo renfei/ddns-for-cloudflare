@@ -52,7 +52,7 @@ public class Main {
         ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(1);
         executorService.scheduleWithFixedDelay(() -> {
             System.out.println("==== DDNS-for-Cloudflare ============");
-            System.out.printf("Start time:%s\n", DateUtils.getDate());
+            System.out.printf("Start time:%s\n", DateUtils.getDate("yyyy-MM-dd HH:mm:ss"));
             try {
                 getMyIp();
                 System.out.printf("GetIP:%s\n", this.myIp);
